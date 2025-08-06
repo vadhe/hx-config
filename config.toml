@@ -1,0 +1,93 @@
+# THEME
+theme = "onedark"  # Try: "gruvbox", "catppuccin_mocha", "dracula"
+
+[editor]
+# UI
+line-number = "relative"
+cursorline = true
+color-modes = true
+bufferline = "multiple"
+rulers = [80, 120]
+shell = ["bash", "-c"]
+
+# Behavior  
+mouse = true
+middle-click-paste = true
+scroll-lines = 3
+auto-save = false
+idle-timeout = 400
+completion-trigger-len = 2
+
+# File handling
+auto-pairs = true
+auto-format = true
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "selections", "position", "file-encoding", "file-line-ending", "file-type"]
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+hidden = false  # Show hidden files
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[editor.indent-guides]
+render = true
+character = "┊"
+
+[editor.soft-wrap]
+enable = true
+
+# CUSTOM KEYBINDINGS
+[keys.normal]
+# Quick save/quit
+C-s = ":w"
+C-q = ":q"
+
+# VSCode-like
+C-p = "file_picker"
+C-b = "file_picker"  # Like file browser
+g = { d = "goto_definition", r = "goto_reference", i = "goto_implementation" }
+
+# Space as leader key bindings
+space.w = ":w"
+space.q = ":q"
+space.x = ":wq"
+space.f = "file_picker"
+space.b = "buffer_picker"
+space.s = "symbol_picker"
+space.S = "workspace_symbol_picker"
+space.r = "rename_symbol"
+space.a = "code_action"
+space.h = "hover"
+"space./" = "toggle_comments"
+
+# File manager in new pane
+space.e = ":sh tmux split-window -h 'lf'"
+
+# Git operations
+"space.g.g" = ":sh tmux split-window -h 'lazygit'"
+"space.g.s" = "global_search"
+
+# Tmux integration
+"space.t.v" = ":sh tmux split-window -h 'hx %{filename}'"
+"space.t.h" = ":sh tmux split-window -v 'hx %{filename}'"
+"space.t.w" = ":sh tmux new-window 'hx %{filename}'"
+"space.t.t" = ":sh tmux split-window -h"
+
+[keys.insert]
+# Save in insert mode
+C-s = ["normal_mode", ":w", "insert_mode"]
+
+[keys.select]
+# VSCode-like selection
+tab = "indent"
+S-tab = "unindent"
