@@ -1,5 +1,10 @@
+# ==========================================
+# HELIX CONFIGURATION WITH TMUX INTEGRATION
+# Location: ~/.config/helix/config.toml
+# ==========================================
+
 # THEME
-theme = "onedark"  # Try: "gruvbox", "catppuccin_mocha", "dracula"
+theme = "onedark"  # Try: "gruvbox", "catppuccin_mocha", "dracula", "tokyonight"
 
 [editor]
 # UI
@@ -46,48 +51,261 @@ character = "┊"
 [editor.soft-wrap]
 enable = true
 
+# ==========================================
 # CUSTOM KEYBINDINGS
+# ==========================================
+
 [keys.normal]
 # Quick save/quit
 C-s = ":w"
 C-q = ":q"
 
-# VSCode-like
+# VSCode-like file navigation
 C-p = "file_picker"
 C-b = "file_picker"  # Like file browser
-g = { d = "goto_definition", r = "goto_reference", i = "goto_implementation" }
+C-e = "file_picker"  # Alternative file explorer binding
 
-# Space as leader key bindings
-space.w = ":w"
-space.q = ":q"
-space.x = ":wq"
-space.f = "file_picker"
-space.b = "buffer_picker"
-space.s = "symbol_picker"
-space.S = "workspace_symbol_picker"
-space.r = "rename_symbol"
-space.a = "code_action"
-space.h = "hover"
-"space./" = "toggle_comments"
+# Goto commands (g prefix)
+[keys.normal.g]
+d = "goto_definition"
+r = "goto_reference"
+i = "goto_implementation"
+t = "goto_type_definition"
+n = "goto_next_diag"
+p = "goto_prev_diag"
+h = "goto_line_start"
+l = "goto_line_end"
 
-# File manager in new pane
-space.e = ":sh tmux split-window -h 'lf'"
+# ==========================================
+# SPACE LEADER KEY BINDINGS
+# ==========================================
 
-# Git operations
-"space.g.g" = ":sh tmux split-window -h 'lazygit'"
-"space.g.s" = "global_search"
+[keys.normal.space]
+# File operations - moved w to space.w section to avoid conflicts
+# w = moved to [keys.normal.space.w]
+q = ":q"                    # Quit
+x = ":wq"                   # Write and quit
+Q = ":q!"                   # Force quit
+W = ":wa"                   # Write all
 
-# Tmux integration
-"space.t.v" = ":sh tmux split-window -h 'hx %{filename}'"
-"space.t.h" = ":sh tmux split-window -v 'hx %{filename}'"
-"space.t.w" = ":sh tmux new-window 'hx %{filename}'"
-"space.t.t" = ":sh tmux split-window -h"
+# Pickers and navigation
+f = "file_picker"           # Find files
+b = "buffer_picker"         # Switch buffers
+s = "symbol_picker"         # Document symbols
+S = "workspace_symbol_picker"  # Workspace symbols
+j = "jumplist_picker"       # Jump list
+"'" = "last_picker"         # Last picker
+d = "diagnostics_picker"    # Show diagnostics
+D = "workspace_diagnostics_picker"  # Workspace diagnostics
+
+# Code actions
+r = "rename_symbol"         # Rename (F2 equivalent)
+a = "code_action"          # Code actions
+# h = moved to avoid conflicts with space.w section
+"/" = "toggle_comments"    # Toggle comment
+
+# Search
+"?" = "command_palette"    # Command palette
+k = "hover"                # Documentation hover
+
+# ==========================================
+# GIT INTEGRATION (space + shift+g for git operations)
+# ==========================================
+
+[keys.normal.space.G]
+g = ":sh tmux new-window 'lazygit || git status; bash'"       # LazyGit in new window
+s = ":sh tmux split-window -h 'lazygit || git status; bash'"  # LazyGit in split
+t = ":sh tmux split-window -v -p 30 'git status; bash'"       # Git status
+d = ":sh tmux split-window -h 'git diff; bash'"               # Git diff
+l = ":sh tmux split-window -v -p 30 'git log --oneline --graph -20; bash'"  # Git log
+c = ":sh tmux new-window 'git commit; bash'"                  # Git commit
+p = ":sh tmux split-window -v -p 30 'git pull; bash'"         # Git pull
+P = ":sh tmux split-window -v -p 30 'git push; bash'"         # Git push
+b = ":sh tmux split-window -h 'git branch -a; bash'"          # Git branches
+f = "global_search"        # Search in files (grep)
+
+# ==========================================
+# FILE EXPLORER (space + e)
+# ==========================================
+
+[keys.normal.space.e]
+e = ":sh tmux split-window -h 'lf || ranger || nnn || ls -la; bash'"      # Explorer in split
+E = ":sh tmux new-window 'lf || ranger || nnn || ls -la; bash'"          # Explorer in new window
+v = ":sh tmux split-window -v 'lf || ranger || nnn; bash'"               # Explorer vertical split
+h = ":sh tmux split-window -h -p 30 'lf || ranger || nnn; bash'"         # Explorer 30% width
+t = ":sh tmux new-window 'tree -C -L 2 | less -R; bash'"                # Tree view
+
+# ==========================================
+# TMUX INTEGRATION (space + t)
+# ==========================================
+
+[keys.normal.space.t]
+# Terminal splits
+t = ":sh tmux split-window -h -p 40"        # Terminal right (40% width)
+T = ":sh tmux new-window"                   # Terminal in new tab
+v = ":sh tmux split-window -h"              # Vertical split (right)
+h = ":sh tmux split-window -v"              # Horizontal split (below)
+b = ":sh tmux split-window -v -p 30"        # Bottom terminal (30% height)
+r = ":sh tmux split-window -h -p 30"        # Right terminal (30% width)
+
+# Pane navigation
+j = ":sh tmux select-pane -D"               # Go to pane below
+k = ":sh tmux select-pane -U"               # Go to pane above
+l = ":sh tmux select-pane -R"               # Go to pane right
+H = ":sh tmux select-pane -L"               # Go to pane left (capital H to avoid conflict)
+
+# Pane management
+x = ":sh tmux kill-pane"                    # Kill current pane
+z = ":sh tmux resize-pane -Z"               # Zoom/unzoom pane
+s = ":sh tmux swap-pane -D"                 # Swap with next pane
+
+# New Helix instances
+n = ":sh tmux split-window -h 'hx .'"       # New Helix in split
+N = ":sh tmux new-window 'hx .'"            # New Helix in tab
+c = ":sh tmux new-window"                   # New window/tab
+
+# ==========================================
+# RUN COMMANDS (space + R for run operations)
+# ==========================================
+
+[keys.normal.space.R]
+# Node.js/npm
+n = ":sh tmux split-window -h 'npm run dev; bash'"           # npm run dev
+N = ":sh tmux new-window 'npm run dev; bash'"                # npm dev in new tab
+s = ":sh tmux split-window -h 'npm start; bash'"             # npm start
+t = ":sh tmux new-window 'npm test; bash'"                   # npm test
+b = ":sh tmux new-window 'npm run build; bash'"              # npm build
+i = ":sh tmux split-window -v -p 30 'npm install; bash'"     # npm install
+
+# Python
+p = ":sh tmux split-window -h 'python3; bash'"               # Python REPL
+P = ":sh tmux split-window -h 'python3 main.py; bash'"       # Run main.py
+
+# Make
+m = ":sh tmux split-window -h 'make; bash'"                  # make
+M = ":sh tmux split-window -h 'make clean && make; bash'"    # make clean & make
+
+# Docker
+d = ":sh tmux new-window 'docker ps; bash'"                  # docker ps
+D = ":sh tmux new-window 'docker-compose up; bash'"          # docker-compose up
+
+# ==========================================
+# WINDOW MANAGEMENT (space + W for window operations)
+# ==========================================
+
+[keys.normal.space.w]
+w = ":w"                   # Write/save (moved from main space section)
+v = ":vsplit"              # Vertical split (Helix internal)
+h = ":hsplit"              # Horizontal split (Helix internal)
+c = ":buffer-close"        # Close buffer
+C = ":buffer-close!"       # Force close buffer
+o = ":buffer-close-others" # Close other buffers
+n = ":new"                 # New buffer
+
+# ==========================================
+# SYSTEM MONITORING (space + m)
+# ==========================================
+
+[keys.normal.space.m]
+m = ":sh tmux split-window -h 'htop || top; bash'"           # htop/top
+M = ":sh tmux new-window 'htop || top; bash'"                # htop in new window
+d = ":sh tmux split-window -h 'df -h; bash'"                 # disk usage
+D = ":sh tmux split-window -h 'ncdu || du -sh *; bash'"      # ncdu disk usage
+n = ":sh tmux split-window -v -p 30 'netstat -tuln; bash'"   # network ports
+l = ":sh tmux split-window -v -p 30 'tail -f /var/log/syslog; bash'"  # logs
+p = ":sh tmux split-window -h 'ps aux | less; bash'"         # processes
+
+# ==========================================
+# CLAUDE CODE AI INTEGRATION (space + c)
+# ==========================================
+
+[keys.normal.space.c]
+c = ":sh tmux new-window 'claude code'"                    # Launch Claude Code
+C = ":sh tmux split-window -h 'claude code'"              # Claude Code in split
+i = ":sh tmux split-window -h 'claude code --interactive'" # Interactive Claude Code
+r = ":sh tmux split-window -v -p 30 'claude code --resume'" # Resume Claude Code session
+h = ":sh tmux new-window 'claude code --help'"            # Claude Code help
+s = ":sh tmux split-window -h 'claude code --session-list'" # List Claude sessions
+n = ":sh tmux new-window 'claude code --new-session'"     # New Claude session
+
+# Quick AI commands with current file context
+f = ":sh tmux split-window -h 'claude code --file %{filename}'"  # Analyze current file
+e = ":sh tmux new-window 'claude code --edit %{filename}'"       # Edit current file with AI
+d = ":sh tmux split-window -v -p 30 'claude code --diff %{filename}'" # Show AI diff suggestions
+
+# ==========================================
+# QUICK ACCESS (space + o)
+# ==========================================
+
+[keys.normal.space.o]
+q = ":sh tmux split-window -v -p 30"          # Quick terminal at bottom
+Q = ":sh tmux split-window -h -p 30"          # Quick terminal at right
+z = ":sh tmux new-window 'fzf | xargs hx'"    # Open file with fzf
+r = ":sh tmux split-window -h 'source ~/.bashrc && echo \"Reloaded .bashrc\"; bash'"  # Reload bashrc
+k = ":config-open"                             # Open Helix config
+K = ":sh tmux new-window 'hx ~/.tmux.conf'"   # Open tmux config
+l = ":log-open"                                # Open Helix log
+H = ":sh tmux new-window 'hx --help | less'"  # Helix help
+
+# ==========================================
+# INSERT MODE BINDINGS
+# ==========================================
 
 [keys.insert]
 # Save in insert mode
 C-s = ["normal_mode", ":w", "insert_mode"]
 
+# Note: Key chord sequences like j-k are not supported in Helix config
+# Use Escape key for normal mode instead
+
+# ==========================================
+# SELECT MODE BINDINGS
+# ==========================================
+
 [keys.select]
 # VSCode-like selection
 tab = "indent"
 S-tab = "unindent"
+
+# Quick actions on selection
+d = "delete_selection"
+c = "change_selection"
+y = "yank"
+"/" = "toggle_comments"
+
+# ==========================================
+# NOTES:
+# ==========================================
+# 1. Install tmux first: sudo apt install tmux
+# 2. Install file managers: sudo apt install lf ranger nnn
+# 3. Install lazygit: https://github.com/jesseduffield/lazygit
+# 4. Install monitoring tools: sudo apt install htop ncdu
+# 5. For fzf: git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
+#
+# Quick Reference:
+# - Space f: Find files
+# - Space Shift+G g: Open git (lazygit)
+# - Space e e: File explorer
+# - Space t t: New terminal
+# - Space Shift+R n: Run npm dev
+# - Space m m: System monitor
+# - Space w v: Split window
+# - Space c c: Launch Claude Code AI
+# - Space c f: Analyze current file with AI
+# - Space o q: Quick terminal at bottom
+#
+# Key binding groups:
+# - space.G.*: Git operations (capital G to avoid conflicts)
+# - space.R.*: Run commands (capital R to avoid conflicts)
+# - space.c.*: Claude Code AI integration
+# - space.w.*: Window management
+# - space.t.*: Terminal/tmux operations
+# - space.e.*: File explorer operations
+# - space.m.*: System monitoring
+# - space.o.*: Quick operations
+#
+# Tmux basics (after starting tmux):
+# - Ctrl+a d: Detach from tmux
+# - tmux a: Reattach to tmux
+# - Alt+Arrow: Navigate panes (if configured in tmux)
+# ==========================================
